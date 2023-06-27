@@ -89,8 +89,8 @@ Make build_grype.sh and build_trivy.sh executable and run them:
 sudo chmod +x build_grype.sh
 sudo chmod +x build_trivy.sh  
 
-sudo build_grype.sh
-sudo build_trivy.sh
+sudo ./build_grype.sh
+sudo ./build_trivy.sh
 ```
 
 ### 5. install the all necessary dependencies for index.js
