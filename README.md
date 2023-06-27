@@ -102,6 +102,9 @@ npm install express body-parser child_process fs
 ```
 ### 6. open new terminal and run this command to Test the API
 Open a new terminal and run the following command to check if the API is functioning correctly:
+
+GRYPE
+
 ```
 curl -X POST -H "Content-Type: application/json" -d '{
    "DOCKER_USERNAME": "riteshnoronha2022",
@@ -111,4 +114,17 @@ curl -X POST -H "Content-Type: application/json" -d '{
    "IMAGE_OF_SCANNER": "jspawar80/interlynk_scanner_grype"
 }' http://localhost:3000/scan
 ```
+
+TRIVY
+
+```
+curl -X POST -H "Content-Type: application/json" -d '{
+   "DOCKER_USERNAME": "riteshnoronha2022",
+   "DOCKER_TOKEN": "dckr_pat_wHRzkibVa0gsYiIV-ue7IxBesO4",
+   "SCANNER": "trivy",
+   "IMAGE_TO_SCAN": "riteshnoronha2022/sbomqs:v0.0.17",
+   "IMAGE_OF_SCANNER": "jspawar80/interlynk_scanner_trivy"
+}' http://localhost:3000/scan
+```
+
 Replace your_username, your_password, your_image_to_scan, and your_scanner_image with your own values.
