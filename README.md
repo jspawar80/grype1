@@ -1,7 +1,16 @@
 #Scan Docker Images for Vulnerabilities with Grype and trivy
-This repository provides a Docker image, entrypoint script and node js API to scan Docker images for vulnerabilities using Grype.
+
+This repository contains a Docker image, entrypoint script, and Node.js API to enable vulnerability scanning of Docker images using Grype and Trivy.
+
+Here are the steps required to set up and run the vulnerability scanner:
+
 
 ### 1. create the build_grype.sh script 
+
+The build_grype.sh script will build and push Docker images using the Grype scanner.
+
+Use the following script, ensuring to replace DOCKER_USERNAME, DOCKER_PASSWORD, and DOCKER_TAG with your own credentials and desired image tag.
+
 ```
 #!/bin/bash
 
@@ -31,13 +40,13 @@ docker push ${DOCKER_USERNAME}/${DOCKER_TAG}:latest
 docker push ${DOCKER_USERNAME}/${DOCKER_TAG}:${LATEST_GRYPE}
 ```
 
-DOCKER_USERNAME='jspawar80'
-DOCKER_PASSWORD='dckr_pat_ecD6s3cZVofGBBE7jSAR_ykbxL4'
-DOCKER_TAG='interlynk_scanner_grype'
-change the value of DOCKER_USERNAME, DOCKER_PASSWORD and DOCKER_TAG
-DOCKER_TAG is the tag you want to give to your image
 
 ### 2. create the build_trivy.sh script 
+
+The build_trivy.sh script will build and push Docker images using the Trivy scanner.
+
+Use the following script, making sure to replace DOCKER_USERNAME, DOCKER_PASSWORD, and DOCKER_TAG with your own credentials and desired image tag.
+
 ```
 #!/bin/bash
 DOCKER_USERNAME='jspawar80'
@@ -62,15 +71,8 @@ docker tag ${DOCKER_USERNAME}/${DOCKER_TAG}:latest ${DOCKER_USERNAME}/${DOCKER_T
 docker push ${DOCKER_USERNAME}/${DOCKER_TAG}:latest
 docker push ${DOCKER_USERNAME}/${DOCKER_TAG}:${LATEST_TRIVY}
 ````
-DOCKER_USERNAME='jspawar80'
-DOCKER_PASSWORD='dckr_pat_ecD6s3cZVofGBBE7jSAR_ykbxL4'
 
-DOCKER_TAG='interlynk_scanner_trivy'
-change the value of DOCKER_USERNAME, DOCKER_PASSWORD and DOCKER_TAG
-DOCKER_TAG is the tag you want to give to your image
-
-
-### 3. changes the path where you want to save the output of scanner in index.js file
+### 3. change the path where you want to save the output of scanner in index.js file
 in line 17
 ```
         '/home/ishu/grype/grype3/previous:/output',
@@ -81,6 +83,8 @@ And line 57
 ```
 
 ### 4. Run the build_grype.sh and build_trivy.sh  
+
+Make build_grype.sh and build_trivy.sh executable and run them:
 ```
 sudo chmod +x build_grype.sh
 sudo chmod +x build_trivy.sh  
@@ -90,11 +94,14 @@ sudo build_trivy.sh
 ```
 
 ### 5. install the all necessary dependencies for index.js
+
+Install the necessary dependencies for index.js using the following commands:
 ```
 npm init -y
 npm install express body-parser child_process fs
 ```
-### 6. open new terminal and run this command to check the api
+### 6. open new terminal and run this command to Test the API
+Open a new terminal and run the following command to check if the API is functioning correctly:
 ```
 curl -X POST -H "Content-Type: application/json" -d '{
    "DOCKER_USERNAME": "riteshnoronha2022",
@@ -104,3 +111,4 @@ curl -X POST -H "Content-Type: application/json" -d '{
    "IMAGE_OF_SCANNER": "jspawar80/interlynk_scanner_grype"
 }' http://localhost:3000/scan
 ```
+Replace your_username, your_password, your_image_to_scan, and your_scanner_image with your own values.
