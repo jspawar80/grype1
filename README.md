@@ -99,6 +99,7 @@ Install the necessary dependencies for index.js using the following commands:
 ```
 npm init -y
 npm install express body-parser child_process fs
+node index.js
 ```
 ### 6. open new terminal and run this command to Test the API
 Open a new terminal and run the following command to check if the API is functioning correctly:
