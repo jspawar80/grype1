@@ -1,0 +1,19 @@
+FROM alpine:latest
+
+RUN apk update && apk add --no-cache \
+    curl \
+    docker-cli \
+    jq \
+    bash
+
+RUN LATEST_TRIVY=$(curl --silent "https://api.github.com/repos/aquasecurity/trivy/releases/latest" | jq -r '.tag_name') && \
+    curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin ${LATEST_TRIVY}
+
+RUN apk del curl jq
+
+COPY entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
+
+CMD [ "node", "server.js" ]
