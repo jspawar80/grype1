@@ -15,8 +15,8 @@ Use the following script, ensuring to replace DOCKER_USERNAME, DOCKER_PASSWORD, 
 #!/bin/bash
 
 
-DOCKER_USERNAME='jspawar80'
-DOCKER_PASSWORD='dckr_pat_ecD6s3cZVofGBBE7jSAR_ykbxL4'
+DOCKER_USERNAME='username_of_dockerhub'
+DOCKER_PASSWORD='password_of_dockerhub'
 DOCKER_TAG='interlynk_scanner_grype'
 
 
@@ -49,10 +49,10 @@ Use the following script, making sure to replace DOCKER_USERNAME, DOCKER_PASSWOR
 
 ```
 #!/bin/bash
-DOCKER_USERNAME='jspawar80'
-DOCKER_PASSWORD='dckr_pat_ecD6s3cZVofGBBE7jSAR_ykbxL4'
-
+DOCKER_USERNAME='username_of_dockerhub'
+DOCKER_PASSWORD='password_of_dockerhub'
 DOCKER_TAG='interlynk_scanner_trivy'
+
 if [ -z "${DOCKER_USERNAME}" ] || [ -z "${DOCKER_PASSWORD}" ]; then
   echo "Docker credentials are not set."
   exit 1
