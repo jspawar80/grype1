@@ -75,11 +75,11 @@ docker push ${DOCKER_USERNAME}/${DOCKER_TAG}:${LATEST_TRIVY}
 ### 3. change the path where you want to save the output of scanner in index.js file
 in line 17
 ```
-        '/home/ishu/grype/grype3/previous:/output',
+        '/path/of/output:/output',
 ```
 And line 57
 ```
-            fs.readFile(`/home/ishu/grype/grype3/previous/${outputFile}`, 'utf8', (err, data) => {
+            fs.readFile(`/path/of/output/${outputFile}`, 'utf8', (err, data) => {
 ```
 
 ### 4. Run the build_grype.sh and build_trivy.sh  
