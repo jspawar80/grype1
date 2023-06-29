@@ -9,6 +9,8 @@ import (
         "os/exec"
         "strings"
         "time"
+        "github.com/google/uuid"
+
 )
 
 type Scan struct {
@@ -26,6 +28,7 @@ type DockerInfo struct {
 type Response struct {
         Message string
         DockerInfo DockerInfo
+	Request_id uuid.UUID
         Results map[string]string
 }
 
@@ -91,6 +94,8 @@ func handleScan(w http.ResponseWriter, r *http.Request) {
         response := Response{
                 Message: "Scan completed successfully",
                 DockerInfo: dockerInfo,
+                Request_id: requestID,
+
                 Results: results,
         }
 
