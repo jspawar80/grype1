@@ -9,8 +9,8 @@ import (
         "os/exec"
         "strings"
         "time"
-        "github.com/google/uuid"
 
+        "github.com/google/uuid"
 )
 
 type Scan struct {
@@ -18,7 +18,7 @@ type Scan struct {
         DOCKER_TOKEN     string
         SCANNER          string
         IMAGE_TO_SCAN    string
-        REQUEST_ID       string
+        IMAGE_OF_SCANNER string
 }
 
 type DockerInfo struct {
@@ -26,10 +26,10 @@ type DockerInfo struct {
 }
 
 type Response struct {
-        Message string
+        Message    string
+        RequestId  string
         DockerInfo DockerInfo
-	Request_id uuid.UUID
-        Results map[string]string
+        Results    map[string]string
 }
 
 func handleScan(w http.ResponseWriter, r *http.Request) {
@@ -41,11 +41,13 @@ func handleScan(w http.ResponseWriter, r *http.Request) {
                 panic(err)
         }
 
+        requestId := uuid.New().String()
+
         cmd := exec.Command("docker", "run", "-v", "/home/ishu/grype/grype3/previous:/output",
                 "-v", "/var/run/docker.sock:/var/run/docker.sock",
                 "-e", fmt.Sprintf("DOCKER_USERNAME=%s", t.DOCKER_USERNAME),
                 "-e", fmt.Sprintf("DOCKER_TOKEN=%s", t.DOCKER_TOKEN),
-                "jspawar80/interlynk_scanner_grype",
+                t.IMAGE_OF_SCANNER,
                 t.SCANNER,
                 t.IMAGE_TO_SCAN)
 
@@ -80,23 +82,20 @@ func handleScan(w http.ResponseWriter, r *http.Request) {
         log.Printf("Output file name: %s", outputFile)
 
         data, err := ioutil.ReadFile(fmt.Sprintf("/home/ishu/grype/grype3/previous/%s", outputFile))
-
         if err != nil {
                 log.Println("File reading error", err)
                 http.Error(w, "Error reading scan result files", http.StatusInternalServerError)
                 return
         }
-        log.Println("File read successfully")
 
         results := make(map[string]string)
         results[format] = string(data)
 
         response := Response{
-                Message: "Scan completed successfully",
+                Message:   "Scan completed successfully",
+                RequestId: requestId,
                 DockerInfo: dockerInfo,
-                Request_id: requestID,
-
-                Results: results,
+                Results:   results,
         }
 
         json.NewEncoder(w).Encode(response)
