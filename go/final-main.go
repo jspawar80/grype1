@@ -25,11 +25,44 @@ type DockerInfo struct {
         CommandOutput string
 }
 
+type DockerVersionInfo struct {
+        Client DockerClient `json:"Client"`
+        Server DockerServer `json:"Server"`
+}
+
+type DockerClient struct {
+        Version string `json:"Version"`
+}
+
+type DockerServer struct {
+        Engine DockerEngine `json:"Engine"`
+}
+
+type DockerEngine struct {
+        Version string `json:"Version"`
+}
+
+type GrypeVersionInfo struct {
+        Application string `json:"Application"`
+        Version     string `json:"Version"`
+}
+
+type ImageLayer struct {
+        Image   string `json:"IMAGE"`
+        Created string `json:"CREATED"`
+        CreatedBy string `json:"CREATED BY"`
+        Size string `json:"SIZE"`
+        Comment string `json:"COMMENT"`
+}
+
 type Response struct {
-        Message    string
-        RequestId  string
-        DockerInfo DockerInfo
-        Results    map[string]string
+        Message        string
+        RequestId      string
+        DockerInfo     DockerInfo
+        Results        map[string]interface{}
+        DockerVersion  DockerVersionInfo
+        GrypeVersion   GrypeVersionInfo
+        ImageLayerInfo []ImageLayer
 }
 
 func handleScan(w http.ResponseWriter, r *http.Request) {
@@ -65,11 +98,14 @@ func handleScan(w http.ResponseWriter, r *http.Request) {
                 CommandOutput: outputStr,
         }
 
+        // Parse CommandOutput here to extract versions and image layer info
+        dockerVersion, grypeVersion, imageLayerInfo := parseOutput(outputStr)
+
         date := time.Now().UTC()
         dateTime := date.Format("2006-01-02")
         var format string
         if t.SCANNER == "grype" {
-                format = "txt"
+                format = "json"
         } else if t.SCANNER == "trivy" {
                 format = "json"
         } else {
@@ -88,22 +124,42 @@ func handleScan(w http.ResponseWriter, r *http.Request) {
                 return
         }
 
-        results := make(map[string]string)
-        results[format] = string(data)
-
-        response := Response{
-                Message:   "Scan completed successfully",
-                RequestId: requestId,
-                DockerInfo: dockerInfo,
-                Results:   results,
+        results := make(map[string]interface{})
+        err = json.Unmarshal(data, &results)
+        if err != nil {
+                log.Println("Error decoding file contents:", err)
+                http.Error(w, "Error decoding file contents", http.StatusInternalServerError)
+                return
         }
 
-        json.NewEncoder(w).Encode(response)
-        log.Println("Response sent successfully")
+        resp := Response{
+                Message:        "Scanning request processed successfully",
+                RequestId:      requestId,
+                DockerInfo:     dockerInfo,
+                Results:        results,
+                DockerVersion:  dockerVersion,
+                GrypeVersion:   grypeVersion,
+                ImageLayerInfo: imageLayerInfo,
+        }
+
+        respBytes, err := json.Marshal(resp)
+        if err != nil {
+                log.Println("Error encoding response to JSON:", err)
+                http.Error(w, "Error encoding response to JSON", http.StatusInternalServerError)
+                return
+        }
+
+        fmt.Fprintf(w, string(respBytes))
 }
 
 func main() {
         http.HandleFunc("/scan", handleScan)
-        log.Println("Starting server on port 3000")
-        log.Fatal(http.ListenAndServe(":3000", nil))
+        log.Println("Starting server on port 8080")
+        log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+// Placeholder function for parsing the Docker command output
+func parseOutput(outputStr string) (DockerVersionInfo, GrypeVersionInfo, []ImageLayer) {
+        // TODO: Parse the outputStr to extract Docker and Grype versions and image layer info
+        return DockerVersionInfo{}, GrypeVersionInfo{}, []ImageLayer{}
 }
